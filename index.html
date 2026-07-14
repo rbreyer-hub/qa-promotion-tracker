@@ -515,14 +515,59 @@
     font-size: 13.5px;
   }
 
-  .summary caption {
-    text-align: left;
+  .summary-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 20px 10px;
+  }
+
+  .summary-title {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
     font-size: 12px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink-soft);
-    padding: 14px 20px 10px;
+  }
+
+  .sort-toggle {
+    display: inline-flex;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .sort-toggle button {
+    font-family: inherit;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    background: var(--card);
+    color: var(--ink-soft);
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-right: 1px solid var(--line-strong);
+  }
+
+  .sort-toggle button:last-child { border-right: none; }
+
+  .sort-toggle button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .sort-toggle button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .summary td.cat {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    color: var(--ink-faint);
+    font-size: 11px;
+    white-space: nowrap;
   }
 
   .summary th {
@@ -560,7 +605,7 @@
   @media print {
     body { background: #ffffff; }
     .wrap { max-width: none; padding: 0 6mm; }
-    .toolbar, .level-tabs, .reset-link { display: none !important; }
+    .toolbar, .level-tabs, .reset-link, .sort-toggle { display: none !important; }
     header.spec, .suite, .summary, .role-card { box-shadow: none; border-color: #999; }
     .suite, .summary, .role-card { break-inside: avoid; }
     .item { break-inside: avoid; }
@@ -626,10 +671,16 @@
   </div>
 
   <section class="summary">
+    <div class="summary-head">
+      <span class="summary-title" id="summary-caption"></span>
+      <div class="sort-toggle" role="group" aria-label="Sort checklist">
+        <button type="button" data-sort="category" aria-pressed="true">By Category</button>
+        <button type="button" data-sort="status" aria-pressed="false">By Status</button>
+      </div>
+    </div>
     <table>
-      <caption id="summary-caption"></caption>
       <thead>
-        <tr><th>Status</th><th>ID</th><th>Requirement</th></tr>
+        <tr><th>Status</th><th>ID</th><th>Category</th><th>Requirement</th></tr>
       </thead>
       <tbody id="summary-body"></tbody>
     </table>
@@ -802,6 +853,8 @@
   var suitesEl = document.getElementById("suites");
   var currentFilter = "all";
   var activeLevel = "l3";
+  var summarySort = "category";
+  var STATUS_PRIORITY = { "needs-attention": 0, "in-progress": 1, "not-started": 2, "completed": 3 };
 
   var EMPTY_TEXT = {
     "not-started": "Nothing marked not started in this view.",
@@ -913,27 +966,44 @@
   function renderSummary() {
     var body = document.getElementById("summary-body");
     body.innerHTML = "";
+
+    var flat = [];
     activeSuites().forEach(function (suite) {
       suite.items.forEach(function (it) {
-        var s = getItemState(it.id);
-        var tr = document.createElement("tr");
-
-        var tdMark = document.createElement("td");
-        tdMark.className = "mark";
-        tdMark.appendChild(buildStatusSelect(it.id, s.status, true));
-
-        var tdId = document.createElement("td");
-        tdId.className = "sid";
-        tdId.textContent = it.id;
-
-        var tdText = document.createElement("td");
-        tdText.textContent = it.text;
-
-        tr.appendChild(tdMark);
-        tr.appendChild(tdId);
-        tr.appendChild(tdText);
-        body.appendChild(tr);
+        flat.push({ id: it.id, text: it.text, suiteTitle: suite.title });
       });
+    });
+
+    if (summarySort === "status") {
+      flat.sort(function (a, b) {
+        return STATUS_PRIORITY[getItemState(a.id).status] - STATUS_PRIORITY[getItemState(b.id).status];
+      });
+    }
+
+    flat.forEach(function (it) {
+      var s = getItemState(it.id);
+      var tr = document.createElement("tr");
+
+      var tdMark = document.createElement("td");
+      tdMark.className = "mark";
+      tdMark.appendChild(buildStatusSelect(it.id, s.status, true));
+
+      var tdId = document.createElement("td");
+      tdId.className = "sid";
+      tdId.textContent = it.id;
+
+      var tdCat = document.createElement("td");
+      tdCat.className = "cat";
+      tdCat.textContent = it.suiteTitle;
+
+      var tdText = document.createElement("td");
+      tdText.textContent = it.text;
+
+      tr.appendChild(tdMark);
+      tr.appendChild(tdId);
+      tr.appendChild(tdCat);
+      tr.appendChild(tdText);
+      body.appendChild(tr);
     });
   }
 
@@ -996,6 +1066,16 @@
         b.setAttribute("aria-pressed", String(b.getAttribute("data-filter") === "all"));
       });
       render();
+    });
+  });
+
+  document.querySelectorAll(".sort-toggle button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      summarySort = btn.getAttribute("data-sort");
+      document.querySelectorAll(".sort-toggle button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      renderSummary();
     });
   });
 
