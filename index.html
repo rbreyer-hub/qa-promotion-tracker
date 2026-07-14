@@ -14,6 +14,9 @@
     --outstanding: #B4720A;
     --outstanding-soft: #F6E8D2;
     --outstanding-ink: #8A5806;
+    --attention: #B23A2E;
+    --attention-soft: #F7DDD8;
+    --attention-ink: #8C2A20;
     --shadow: 0 1px 2px rgba(18, 24, 26, 0.06);
     color-scheme: light;
   }
@@ -33,6 +36,9 @@
       --outstanding: #E3A23D;
       --outstanding-soft: #3A2C14;
       --outstanding-ink: #F0BC6C;
+      --attention: #E2695A;
+      --attention-soft: #3B211D;
+      --attention-ink: #F0A99A;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
       color-scheme: dark;
     }
@@ -41,12 +47,14 @@
     --paper: #11181A; --card: #17201F; --ink: #E7EDEA; --ink-soft: #8FA39D; --ink-faint: #5E706B;
     --line: #223330; --line-strong: #2C3F3B; --accent: #34C9AC; --accent-soft: #163832; --accent-ink: #7FE0CB;
     --outstanding: #E3A23D; --outstanding-soft: #3A2C14; --outstanding-ink: #F0BC6C;
+    --attention: #E2695A; --attention-soft: #3B211D; --attention-ink: #F0A99A;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.35); color-scheme: dark;
   }
   :root[data-theme="light"] {
     --paper: #F1F4F1; --card: #FFFFFF; --ink: #12181A; --ink-soft: #4B5A56; --ink-faint: #7C8B86;
     --line: #D6DEDA; --line-strong: #BEC9C4; --accent: #0E7C6B; --accent-soft: #DCEFE9; --accent-ink: #0A5A4D;
     --outstanding: #B4720A; --outstanding-soft: #F6E8D2; --outstanding-ink: #8A5806;
+    --attention: #B23A2E; --attention-soft: #F7DDD8; --attention-ink: #8C2A20;
     --shadow: 0 1px 2px rgba(18, 24, 26, 0.06); color-scheme: light;
   }
 
@@ -219,25 +227,27 @@
     gap: 3px;
     height: 10px;
     border-radius: 2px;
-    overflow: hidden;
   }
 
   .coverage-seg {
+    display: flex;
     background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
     flex: 1 1 0;
-    position: relative;
   }
 
-  .coverage-seg > i {
-    display: block;
-    height: 100%;
-    width: var(--fill, 0%);
-    background: var(--accent);
-    transition: width 0.4s ease;
+  .seg-part {
+    transition: flex-basis 0.4s ease;
   }
+
+  .seg-part.seg-completed { background: var(--accent); }
+  .seg-part.seg-in-progress { background: var(--outstanding); }
+  .seg-part.seg-needs-attention { background: var(--attention); }
+  .seg-part.seg-not-started { background: var(--line-strong); }
 
   @media (prefers-reduced-motion: reduce) {
-    .coverage-seg > i { transition: none; }
+    .seg-part { transition: none; }
   }
 
   .coverage-keys {
@@ -246,10 +256,36 @@
     flex-wrap: wrap;
     gap: 6px;
     margin-top: 6px;
-    margin-bottom: 24px;
     font-size: 11px;
     color: var(--ink-faint);
   }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 10px 0 24px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend i {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .legend .lg-completed { background: var(--accent); }
+  .legend .lg-in-progress { background: var(--outstanding); }
+  .legend .lg-needs-attention { background: var(--attention); }
+  .legend .lg-not-started { background: var(--line-strong); }
 
   /* ---- Filter control ---- */
   .toolbar {
@@ -263,6 +299,7 @@
 
   .filters {
     display: inline-flex;
+    flex-wrap: wrap;
     border: 1px solid var(--line-strong);
     border-radius: 4px;
     overflow: hidden;
@@ -270,12 +307,12 @@
 
   .filters button {
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12.5px;
     letter-spacing: 0.02em;
     background: var(--card);
     color: var(--ink-soft);
     border: none;
-    padding: 8px 14px;
+    padding: 8px 12px;
     cursor: pointer;
     border-right: 1px solid var(--line-strong);
   }
@@ -288,7 +325,7 @@
   }
 
   .filters button:focus-visible,
-  input[type="checkbox"]:focus-visible,
+  select:focus-visible,
   .level-tabs button:focus-visible,
   textarea:focus-visible {
     outline: 2px solid var(--accent);
@@ -344,30 +381,13 @@
   .item {
     padding: 14px 20px;
     border-bottom: 1px solid var(--line);
-    display: grid;
-    grid-template-columns: 22px 1fr;
-    gap: 12px;
   }
 
   .item:last-child { border-bottom: none; }
 
-  .item input[type="checkbox"],
-  .summary input[type="checkbox"] {
-    width: 21px;
-    height: 21px;
-    margin: 1px 0 0;
-    accent-color: var(--accent);
-    border: 1.5px solid var(--ink-soft);
-    border-radius: 3px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  .item-body { min-width: 0; }
-
   .item-top {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
@@ -380,28 +400,34 @@
     letter-spacing: 0.04em;
   }
 
-  .pill {
+  .status-select {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
-    font-size: 10.5px;
-    letter-spacing: 0.05em;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    padding: 2px 8px;
+    padding: 4px 8px;
     border-radius: 20px;
-    background: var(--outstanding-soft);
-    color: var(--outstanding-ink);
+    border: 1px solid transparent;
+    cursor: pointer;
   }
 
-  .item.is-checked .pill {
-    background: var(--accent-soft);
-    color: var(--accent-ink);
+  .status-select-sm {
+    font-size: 10px;
+    padding: 2px 6px;
   }
+
+  .status-select.status-not-started { background: var(--line); color: var(--ink-faint); }
+  .status-select.status-in-progress { background: var(--outstanding-soft); color: var(--outstanding-ink); }
+  .status-select.status-needs-attention { background: var(--attention-soft); color: var(--attention-ink); }
+  .status-select.status-completed { background: var(--accent-soft); color: var(--accent-ink); }
 
   .item-text {
-    margin: 4px 0 0;
+    margin: 8px 0 0;
     color: var(--ink);
   }
 
-  .item.is-checked .item-text {
+  .item.is-completed .item-text {
     color: var(--ink-soft);
   }
 
@@ -414,7 +440,7 @@
     color: var(--ink-soft);
   }
 
-  .item.is-checked .item-guidance {
+  .item.is-completed .item-guidance {
     color: var(--ink-faint);
     border-left-color: var(--line);
   }
@@ -520,8 +546,7 @@
   .summary tr:last-child td { border-bottom: none; }
 
   .summary td.mark {
-    width: 24px;
-    text-align: center;
+    width: 138px;
   }
 
   .summary td.sid {
@@ -551,7 +576,7 @@
       <span id="today-stamp"></span>
     </div>
     <h1>Promotion Readiness: QA Analyst II → III</h1>
-    <p class="spec-sub">Two self-assessment checklists drawn from both role pages: the full Level 2 baseline, in case anything there is slipping, and everything Level 3 adds on top of it. Check off what you can evidence, and note how.</p>
+    <p class="spec-sub">Two self-assessment checklists drawn from both role pages: the full Level 2 baseline, in case anything there is slipping, and everything Level 3 adds on top of it. Set a status on each item and note your evidence as you go.</p>
   </header>
 
   <section class="roles">
@@ -575,16 +600,24 @@
 
   <div class="coverage-row">
     <span class="coverage-label" id="coverage-label"></span>
-    <span class="coverage-num"><strong id="cov-checked">0</strong> / <span id="cov-total">0</span> verified</span>
+    <span class="coverage-num"><strong id="cov-checked">0</strong> / <span id="cov-total">0</span> completed</span>
   </div>
   <div class="coverage-bar" id="coverage-bar"></div>
   <div class="coverage-keys" id="coverage-keys"></div>
+  <div class="legend">
+    <span><i class="lg-not-started"></i>Not started</span>
+    <span><i class="lg-in-progress"></i>In progress</span>
+    <span><i class="lg-needs-attention"></i>Needs attention</span>
+    <span><i class="lg-completed"></i>Completed</span>
+  </div>
 
   <div class="toolbar">
     <div class="filters" role="group" aria-label="Filter items">
       <button type="button" data-filter="all" aria-pressed="true">All</button>
-      <button type="button" data-filter="outstanding" aria-pressed="false">Outstanding</button>
-      <button type="button" data-filter="verified" aria-pressed="false">Verified</button>
+      <button type="button" data-filter="not-started" aria-pressed="false">Not Started</button>
+      <button type="button" data-filter="in-progress" aria-pressed="false">In Progress</button>
+      <button type="button" data-filter="needs-attention" aria-pressed="false">Needs Attention</button>
+      <button type="button" data-filter="completed" aria-pressed="false">Completed</button>
     </div>
     <div style="display:flex; gap:14px; align-items:center;">
       <button type="button" class="reset-link" id="export-btn">Export as PDF</button>
@@ -596,7 +629,7 @@
     <table>
       <caption id="summary-caption"></caption>
       <thead>
-        <tr><th></th><th>ID</th><th>Requirement</th></tr>
+        <tr><th>Status</th><th>ID</th><th>Requirement</th></tr>
       </thead>
       <tbody id="summary-body"></tbody>
     </table>
@@ -611,6 +644,13 @@
 
 <script>
 (function () {
+  var STATUSES = [
+    { value: "not-started", label: "Not Started" },
+    { value: "in-progress", label: "In Progress" },
+    { value: "needs-attention", label: "Needs Attention" },
+    { value: "completed", label: "Completed" }
+  ];
+
   var L3_SUITES = [
     {
       key: "exp",
@@ -712,7 +752,7 @@
     }
   };
 
-  var STORAGE_KEY = "qa-promo-l2-l3-v2";
+  var STORAGE_KEY = "qa-promo-l2-l3-v3";
   var state = {};
   try {
     state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -723,7 +763,9 @@
   }
 
   function getItemState(id) {
-    return state[id] || { checked: false, note: "" };
+    var s = state[id];
+    if (!s) return { status: "not-started", note: "" };
+    return { status: s.status || "not-started", note: s.note || "" };
   }
 
   function setItemState(id, patch) {
@@ -732,9 +774,41 @@
     save();
   }
 
+  function statusLabel(value) {
+    for (var i = 0; i < STATUSES.length; i++) {
+      if (STATUSES[i].value === value) return STATUSES[i].label;
+    }
+    return "Not Started";
+  }
+
+  function buildStatusSelect(id, currentStatus, small) {
+    var select = document.createElement("select");
+    select.className = "status-select status-" + currentStatus + (small ? " status-select-sm" : "");
+    select.setAttribute("aria-label", "Set status for " + id);
+    STATUSES.forEach(function (s) {
+      var opt = document.createElement("option");
+      opt.value = s.value;
+      opt.textContent = s.label;
+      if (s.value === currentStatus) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener("change", function () {
+      setItemState(id, { status: select.value });
+      render();
+    });
+    return select;
+  }
+
   var suitesEl = document.getElementById("suites");
   var currentFilter = "all";
   var activeLevel = "l3";
+
+  var EMPTY_TEXT = {
+    "not-started": "Nothing marked not started in this view.",
+    "in-progress": "Nothing in progress right now.",
+    "needs-attention": "Nothing flagged as needing attention.",
+    "completed": "Nothing completed yet — set a status as you build evidence."
+  };
 
   function activeSuites() {
     return LEVELS[activeLevel].suites;
@@ -747,15 +821,14 @@
     activeSuites().forEach(function (suite) {
       var visibleItems = suite.items.filter(function (it) {
         var s = getItemState(it.id);
-        if (currentFilter === "outstanding") return !s.checked;
-        if (currentFilter === "verified") return s.checked;
-        return true;
+        if (currentFilter === "all") return true;
+        return s.status === currentFilter;
       });
 
       if (!visibleItems.length) return;
       anyVisible = true;
 
-      var checkedCount = suite.items.filter(function (it) { return getItemState(it.id).checked; }).length;
+      var completedCount = suite.items.filter(function (it) { return getItemState(it.id).status === "completed"; }).length;
 
       var suiteEl = document.createElement("section");
       suiteEl.className = "suite";
@@ -764,32 +837,24 @@
       head.className = "suite-head";
       head.innerHTML =
         '<span class="suite-title">' + escapeHtml(suite.title) + '</span>' +
-        '<span class="suite-count">' + checkedCount + ' / ' + suite.items.length + ' verified</span>';
+        '<span class="suite-count">' + completedCount + ' / ' + suite.items.length + ' completed</span>';
       suiteEl.appendChild(head);
 
       visibleItems.forEach(function (it) {
         var s = getItemState(it.id);
         var row = document.createElement("div");
-        row.className = "item" + (s.checked ? " is-checked" : "");
-
-        var cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = s.checked;
-        cb.setAttribute("aria-label", "Mark " + it.id + " as verified");
-        cb.addEventListener("change", function () {
-          setItemState(it.id, { checked: cb.checked });
-          render();
-        });
-        row.appendChild(cb);
+        row.className = "item" + (s.status === "completed" ? " is-completed" : "");
 
         var body = document.createElement("div");
         body.className = "item-body";
 
         var top = document.createElement("div");
         top.className = "item-top";
-        top.innerHTML =
-          '<span class="item-id">' + it.id + '</span>' +
-          '<span class="pill">' + (s.checked ? "Verified" : "Outstanding") + '</span>';
+        var idSpan = document.createElement("span");
+        idSpan.className = "item-id";
+        idSpan.textContent = it.id;
+        top.appendChild(idSpan);
+        top.appendChild(buildStatusSelect(it.id, s.status, false));
         body.appendChild(top);
 
         var text = document.createElement("p");
@@ -834,9 +899,7 @@
     if (!anyVisible) {
       var empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.textContent = currentFilter === "verified"
-        ? "Nothing verified yet — check off items as you build evidence."
-        : "Nothing outstanding in this view.";
+      empty.textContent = EMPTY_TEXT[currentFilter] || "Nothing in this view.";
       suitesEl.appendChild(empty);
     }
 
@@ -857,15 +920,7 @@
 
         var tdMark = document.createElement("td");
         tdMark.className = "mark";
-        var cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = s.checked;
-        cb.setAttribute("aria-label", "Mark " + it.id + " as verified");
-        cb.addEventListener("change", function () {
-          setItemState(it.id, { checked: cb.checked });
-          render();
-        });
-        tdMark.appendChild(cb);
+        tdMark.appendChild(buildStatusSelect(it.id, s.status, true));
 
         var tdId = document.createElement("td");
         tdId.className = "sid";
@@ -883,32 +938,40 @@
   }
 
   function renderCoverage() {
-    var totalAll = 0, checkedAll = 0;
+    var totalAll = 0, completedAll = 0;
     var bar = document.getElementById("coverage-bar");
     var keys = document.getElementById("coverage-keys");
     bar.innerHTML = "";
     keys.innerHTML = "";
 
+    var order = ["completed", "in-progress", "needs-attention", "not-started"];
+
     activeSuites().forEach(function (suite) {
       var total = suite.items.length;
-      var checked = suite.items.filter(function (it) { return getItemState(it.id).checked; }).length;
+      var counts = { "not-started": 0, "in-progress": 0, "needs-attention": 0, "completed": 0 };
+      suite.items.forEach(function (it) {
+        counts[getItemState(it.id).status]++;
+      });
       totalAll += total;
-      checkedAll += checked;
+      completedAll += counts.completed;
 
       var seg = document.createElement("div");
       seg.className = "coverage-seg";
-      var fillPct = total ? Math.round((checked / total) * 100) : 0;
-      var i = document.createElement("i");
-      i.style.setProperty("--fill", fillPct + "%");
-      seg.appendChild(i);
+      order.forEach(function (key) {
+        if (!counts[key]) return;
+        var part = document.createElement("div");
+        part.className = "seg-part seg-" + key;
+        part.style.flexBasis = (counts[key] / total * 100) + "%";
+        seg.appendChild(part);
+      });
       bar.appendChild(seg);
 
       var key = document.createElement("span");
-      key.textContent = suite.title.split(" ")[0] + " " + checked + "/" + total;
+      key.textContent = suite.title.split(" ")[0] + " " + counts.completed + "/" + total;
       keys.appendChild(key);
     });
 
-    document.getElementById("cov-checked").textContent = checkedAll;
+    document.getElementById("cov-checked").textContent = completedAll;
     document.getElementById("cov-total").textContent = totalAll;
   }
 
@@ -937,7 +1000,7 @@
   });
 
   document.getElementById("reset-btn").addEventListener("click", function () {
-    if (window.confirm("Clear all checked items and notes for the currently open checklist (" + activeLevel.toUpperCase() + ")?")) {
+    if (window.confirm("Clear all statuses and notes for the currently open checklist (" + activeLevel.toUpperCase() + ")?")) {
       activeSuites().forEach(function (suite) {
         suite.items.forEach(function (it) { delete state[it.id]; });
       });
