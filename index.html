@@ -63,10 +63,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .mono {
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
-  }
-
   .wrap {
     max-width: 880px;
     margin: 0 auto;
@@ -80,7 +76,7 @@
     background: var(--card);
     box-shadow: var(--shadow);
     padding: 28px 32px 24px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
 
   .spec-id {
@@ -106,10 +102,91 @@
 
   .spec-sub {
     color: var(--ink-soft);
-    margin: 0 0 24px;
+    margin: 0;
     max-width: 62ch;
   }
 
+  /* ---- Role summary cards ---- */
+  .roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 620px) {
+    .roles { grid-template-columns: 1fr; }
+  }
+
+  .role-card {
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+  }
+
+  .role-kicker {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+
+  .role-blurb {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+
+  .role-meta {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink);
+  }
+
+  /* ---- Level tabs ---- */
+  .level-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--line);
+    margin-bottom: 20px;
+  }
+
+  .level-tabs button {
+    flex: 1 1 0;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 12px 4px;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+  }
+
+  .level-tabs button + button { margin-left: 20px; }
+
+  .level-tabs button[aria-pressed="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+
+  .scope-note {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0 0 20px;
+    max-width: 62ch;
+  }
+
+  /* ---- Coverage ---- */
   .coverage-row {
     display: flex;
     align-items: baseline;
@@ -166,7 +243,10 @@
   .coverage-keys {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
     margin-top: 6px;
+    margin-bottom: 24px;
     font-size: 11px;
     color: var(--ink-faint);
   }
@@ -209,7 +289,7 @@
 
   .filters button:focus-visible,
   input[type="checkbox"]:focus-visible,
-  .baseline-toggle:focus-visible,
+  .level-tabs button:focus-visible,
   textarea:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -325,6 +405,30 @@
     color: var(--ink-soft);
   }
 
+  .item-guidance {
+    margin: 8px 0 0;
+    padding-left: 11px;
+    border-left: 2px solid var(--line-strong);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .item.is-checked .item-guidance {
+    color: var(--ink-faint);
+    border-left-color: var(--line);
+  }
+
+  .kicker-label {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin: 10px 0 4px;
+  }
+
   .evidence {
     margin-top: 10px;
   }
@@ -348,69 +452,6 @@
 
   .evidence textarea:hover {
     border-color: var(--ink-soft);
-  }
-
-  /* ---- Baseline reference ---- */
-  .baseline {
-    margin-top: 32px;
-  }
-
-  .baseline-toggle {
-    width: 100%;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: transparent;
-    border: 1px dashed var(--line-strong);
-    border-radius: 4px;
-    padding: 14px 20px;
-    color: var(--ink-soft);
-    font-family: inherit;
-    font-size: 14px;
-    cursor: pointer;
-  }
-
-  .baseline-toggle .chev {
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
-    transition: transform 0.2s ease;
-  }
-
-  .baseline-toggle[aria-expanded="true"] .chev {
-    transform: rotate(90deg);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .baseline-toggle .chev { transition: none; }
-  }
-
-  .baseline-panel {
-    display: none;
-    margin-top: 12px;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 4px 20px;
-    color: var(--ink-soft);
-  }
-
-  .baseline-panel.open { display: block; }
-
-  .baseline-panel h3 {
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin: 16px 0 8px;
-  }
-
-  .baseline-panel ul {
-    margin: 0 0 16px;
-    padding-left: 20px;
-  }
-
-  .baseline-panel li {
-    margin-bottom: 6px;
   }
 
   footer.note {
@@ -490,26 +531,14 @@
     white-space: nowrap;
   }
 
-  /* ---- Evidence label ---- */
-  .evidence-label {
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
-    font-size: 10.5px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    display: block;
-    margin: 10px 0 5px;
-  }
-
   /* ---- Print / PDF export ---- */
   @media print {
     body { background: #ffffff; }
     .wrap { max-width: none; padding: 0 6mm; }
-    .toolbar, .baseline-toggle, .reset-link { display: none !important; }
-    header.spec, .suite, .summary { box-shadow: none; border-color: #999; }
-    .suite, .summary { break-inside: avoid; }
+    .toolbar, .level-tabs, .reset-link { display: none !important; }
+    header.spec, .suite, .summary, .role-card { box-shadow: none; border-color: #999; }
+    .suite, .summary, .role-card { break-inside: avoid; }
     .item { break-inside: avoid; }
-    .baseline-panel { display: block !important; border: none; padding: 0 20px; }
     a { color: inherit; text-decoration: none; }
     textarea { border-color: #bbb; overflow: hidden; }
   }
@@ -522,15 +551,34 @@
       <span id="today-stamp"></span>
     </div>
     <h1>Promotion Readiness: QA Analyst II → III</h1>
-    <p class="spec-sub">Every requirement that Level 3 adds on top of Level 2, drawn directly from both role pages. Check off what you can already evidence — the rest is your outstanding work.</p>
-
-    <div class="coverage-row">
-      <span class="coverage-label">Delta coverage</span>
-      <span class="coverage-num"><strong id="cov-checked">0</strong> / <span id="cov-total">0</span> verified</span>
-    </div>
-    <div class="coverage-bar" id="coverage-bar"></div>
-    <div class="coverage-keys" id="coverage-keys"></div>
+    <p class="spec-sub">Two self-assessment checklists drawn from both role pages: the full Level 2 baseline, in case anything there is slipping, and everything Level 3 adds on top of it. Check off what you can evidence, and note how.</p>
   </header>
+
+  <section class="roles">
+    <div class="role-card">
+      <div class="role-kicker">Level 2 · QA Analyst II</div>
+      <p class="role-blurb">An experienced and autonomous contributor with demonstrated proficiency in manual testing across multiple product areas — responsible for testing features of significant complexity, validating data integrity across domains, and providing reliable quality sign-offs.</p>
+      <div class="role-meta">Min. experience: 2 years</div>
+    </div>
+    <div class="role-card">
+      <div class="role-kicker">Level 3 · QA Analyst III</div>
+      <p class="role-blurb">A highly proficient, trusted domain expert who leads quality strategy for major projects, mentors the team on best practices, and acts as the final authority on product risk and release readiness.</p>
+      <div class="role-meta">Min. experience: 4 years</div>
+    </div>
+  </section>
+
+  <div class="level-tabs" role="group" aria-label="Select checklist">
+    <button type="button" data-level="l3" aria-pressed="true">Level 3 — outstanding (17)</button>
+    <button type="button" data-level="l2" aria-pressed="false">Level 2 — baseline (15)</button>
+  </div>
+  <p class="scope-note" id="scope-note"></p>
+
+  <div class="coverage-row">
+    <span class="coverage-label" id="coverage-label"></span>
+    <span class="coverage-num"><strong id="cov-checked">0</strong> / <span id="cov-total">0</span> verified</span>
+  </div>
+  <div class="coverage-bar" id="coverage-bar"></div>
+  <div class="coverage-keys" id="coverage-keys"></div>
 
   <div class="toolbar">
     <div class="filters" role="group" aria-label="Filter items">
@@ -540,13 +588,13 @@
     </div>
     <div style="display:flex; gap:14px; align-items:center;">
       <button type="button" class="reset-link" id="export-btn">Export as PDF</button>
-      <button type="button" class="reset-link" id="reset-btn">Reset checklist</button>
+      <button type="button" class="reset-link" id="reset-btn">Reset this checklist</button>
     </div>
   </div>
 
   <section class="summary">
     <table>
-      <caption>Summary checklist — 17 Level 3 requirements</caption>
+      <caption id="summary-caption"></caption>
       <thead>
         <tr><th></th><th>ID</th><th>Requirement</th></tr>
       </thead>
@@ -556,104 +604,115 @@
 
   <main id="suites"></main>
 
-  <div class="baseline">
-    <button type="button" class="baseline-toggle" id="baseline-toggle" aria-expanded="false" aria-controls="baseline-panel">
-      <span>Reference: full Level 2 baseline (must still be consistently met)</span>
-      <span class="chev">›</span>
-    </button>
-    <div class="baseline-panel" id="baseline-panel"></div>
-  </div>
-
   <footer class="note">
-    Source pages: <a href="https://patriotsoftware.atlassian.net/wiki/spaces/PDD/pages/4622942209/QA+Analyst+Level+2">QA Analyst Level 2</a> and <a href="https://patriotsoftware.atlassian.net/wiki/spaces/PDD/pages/4622974977/QA+Analyst+Level+3">QA Analyst Level 3</a>, both authored by Tim Weston, space PDD. Checklist state and evidence notes are saved locally in this browser only.
+    Source pages: <a href="https://patriotsoftware.atlassian.net/wiki/spaces/PDD/pages/4622942209/QA+Analyst+Level+2">QA Analyst Level 2</a> and <a href="https://patriotsoftware.atlassian.net/wiki/spaces/PDD/pages/4622974977/QA+Analyst+Level+3">QA Analyst Level 3</a>, both authored by Tim Weston, space PDD. "In practice" notes are supplementary guidance on common QA evidence for each item, not part of the source pages. Checklist state and notes are saved locally in this browser only.
   </footer>
 </div>
 
 <script>
 (function () {
-  var SUITES = [
+  var L3_SUITES = [
     {
       key: "exp",
       title: "Experience Guidelines",
       items: [
-        { id: "EXP-1", text: "Minimum of 4 years of professional experience as a QA Analyst or in a related senior manual testing role (Level 2 requires 2)." },
-        { id: "EXP-2", text: "Consistently meets or exceeds Level 2 expectations, demonstrating expert-level proficiency in multiple domains (not just Level 1)." }
+        { id: "EXP-1", text: "Minimum of 4 years of professional experience as a QA Analyst or in a related senior manual testing role (Level 2 requires 2).", note: "This is a tenure gate more than a skill gate. Track your QA-specific start date precisely — unrelated prior QA-adjacent roles may or may not count depending on how directly related they are." },
+        { id: "EXP-2", text: "Consistently meets or exceeds Level 2 expectations, demonstrating expert-level proficiency in multiple domains (not just Level 1).", note: "Expert-level in ‘multiple domains’ usually means being the default reviewer or escalation point in at least two areas, not just competent in them — see TECH-3 (SME) for how this is typically demonstrated." }
       ]
     },
     {
       key: "tech",
       title: "Technical Expertise",
       items: [
-        { id: "TECH-1", text: "Provides expert-level consultation during architecture and design reviews, representing the quality risk perspective for new systems and features." },
-        { id: "TECH-2", text: "Demonstrates advanced ability to use tools, including AI, to analyze network traffic and validate server-side responses, diagnosing subtle bugs." },
-        { id: "TECH-3", text: "Acts as a Subject Matter Expert (SME) for at least two major, interconnected product areas." },
-        { id: "TECH-4", text: "Actively identifies areas of improvement in the testing process and presents new ideas to the QA team, especially leveraging Claude." },
-        { id: "TECH-5", text: "Holds training sessions for the rest of the QA team on domain, tools, or other relevant material." },
-        { id: "TECH-6", text: "Maintains and organizes application-wide test plans for mob testing sessions." }
+        { id: "TECH-1", text: "Provides expert-level consultation during architecture and design reviews, representing the quality risk perspective for new systems and features.", note: "In practice: getting invited to (or requesting) a seat at design discussions before code is written, and raising testability, failure-mode, and rollback questions early — not after a PR is already up." },
+        { id: "TECH-2", text: "Demonstrates advanced ability to use tools, including AI, to analyze network traffic and validate server-side responses, diagnosing subtle bugs.", note: "Browser dev tools' Network tab, Postman, or AI-assisted log analysis to trace a request/response chain and pinpoint where a bad payload or 500 originates — rather than just reporting ‘it broke’." },
+        { id: "TECH-3", text: "Acts as a Subject Matter Expert (SME) for at least two major, interconnected product areas.", note: "SME status is usually informal until it's tested. Track how often teammates or other teams route questions about a domain specifically to you." },
+        { id: "TECH-4", text: "Actively identifies areas of improvement in the testing process and presents new ideas to the QA team, especially leveraging Claude.", note: "Concrete evidence is a documented proposal — even a short write-up or Slack post — you pitched to the team, plus whether it was adopted. Ideas that stay in your head don't count as ‘presented’." },
+        { id: "TECH-5", text: "Holds training sessions for the rest of the QA team on domain, tools, or other relevant material.", note: "A single lunch-and-learn or recorded walkthrough on a tool, domain, or technique counts. The bar is having actually run one, not just being capable of running one." },
+        { id: "TECH-6", text: "Maintains and organizes application-wide test plans for mob testing sessions.", note: "Specifically about mob/group testing sessions — a maintained, shared plan others can pick up and execute from, not a personal one-off checklist." }
       ]
     },
     {
       key: "comm",
       title: "Communication & Collaboration",
       items: [
-        { id: "COMM-1", text: "Mentors and coaches junior analysts on complex testing techniques, effective defect reporting, and communication strategies." },
-        { id: "COMM-2", text: "Acts as a liaison between QA and other departments (e.g., Support, Training, UX) to ensure quality standards are met across the organization." },
-        { id: "COMM-3", text: "Proactively seeks and incorporates feedback from customer support and the QA Dashboard metrics to improve future testing efforts." },
-        { id: "COMM-4", text: "Helps diagnose, fix, and improve KaneAI automation for other analysts." }
+        { id: "COMM-1", text: "Mentors and coaches junior analysts on complex testing techniques, effective defect reporting, and communication strategies.", note: "Structured mentoring — regular 1:1s, pairing on test design, reviewing their bug reports — reads stronger than ad hoc help. Track cadence, not just occurrence." },
+        { id: "COMM-2", text: "Acts as a liaison between QA and other departments (e.g., Support, Training, UX) to ensure quality standards are met across the organization.", note: "Look for recurring touchpoints — a standing sync with Support about repeat tickets, or being looped into UX reviews — rather than a single one-off cross-team conversation." },
+        { id: "COMM-3", text: "Proactively seeks and incorporates feedback from customer support and the QA Dashboard metrics to improve future testing efforts.", note: "Pull a specific example from the QA Dashboard or a support escalation that changed how you scoped a later test pass. The causal link is the evidence, not just awareness of the metrics." },
+        { id: "COMM-4", text: "Helps diagnose, fix, and improve KaneAI automation for other analysts.", note: "This is automation support, not just usage. Evidence looks like fixing a broken locator or flaky step in someone else's KaneAI flow, not only running your own." }
       ]
     },
     {
       key: "resp",
       title: "Responsibility & Accountability",
       items: [
-        { id: "RESP-1", text: "Takes ultimate ownership of the testing and quality sign-off for major cross-application releases, including coordinating final production verification." },
-        { id: "RESP-2", text: "Manages the complete lifecycle of quality documentation for one or more domains, ensuring all test cases and KaneAI automations are up-to-date and easily accessible." },
-        { id: "RESP-3", text: "Retains and disseminates institutional knowledge across the QA team, ensuring critical information is documented and shared." },
-        { id: "RESP-4", text: "Consistently works ahead of their team to analyze requirements for future sprints and initiatives, preparing test strategies and identifying technical blockers." },
-        { id: "RESP-5", text: "Consistently demonstrates the ability to add an extra layer of testing beyond the layer suggested by the information provided." }
+        { id: "RESP-1", text: "Takes ultimate ownership of the testing and quality sign-off for major cross-application releases, including coordinating final production verification.", note: "Look for releases where you were the final go/no-go voice across more than one application area, and where you personally verified in production post-release — not only in staging beforehand." },
+        { id: "RESP-2", text: "Manages the complete lifecycle of quality documentation for one or more domains, ensuring all test cases and KaneAI automations are up-to-date and easily accessible.", note: "This is upkeep over time — stale test cases and abandoned automations count against this, so a periodic audit/cleanup pass is part of the evidence." },
+        { id: "RESP-3", text: "Retains and disseminates institutional knowledge across the QA team, ensuring critical information is documented and shared.", note: "Concrete forms: a wiki page you started that others contribute to, or being the person new hires get pointed to for a given domain." },
+        { id: "RESP-4", text: "Consistently works ahead of their team to analyze requirements for future sprints and initiatives, preparing test strategies and identifying technical blockers.", note: "Evidence is a test strategy or list of open questions written before a sprint starts — ideally surfaced during backlog refinement, not after work begins." },
+        { id: "RESP-5", text: "Consistently demonstrates the ability to add an extra layer of testing beyond the layer suggested by the information provided.", note: "The clearest evidence is a bug you found that wasn't implied by the ticket or AC at all — something you thought to check because of domain knowledge, not because you were told to." }
       ]
     }
   ];
 
-  var BASELINE = [
+  var L2_SUITES = [
     {
+      key: "exp",
       title: "Experience Guidelines",
       items: [
-        "Minimum of 2 years of professional experience as a QA Analyst or in a directly related software testing role.",
-        "Must consistently meet or exceed the expectations of a QA Analyst Level 1."
+        { id: "L2-EXP-1", text: "Minimum of 2 years of professional experience as a QA Analyst or in a directly related software testing role.", note: "Track this against your official start date in QA, plus any directly transferable testing experience (e.g. a dev role with a heavy testing component). HR/People Ops can confirm exact tenure if needed." },
+        { id: "L2-EXP-2", text: "Must consistently meet or exceed the expectations of a QA Analyst Level 1.", note: "Ask your lead or peers for calibration feedback on where you may still be falling short of Level 1 expectations, if anywhere — this is judged over multiple review cycles, not a single sprint." }
       ]
     },
     {
+      key: "tech",
       title: "Technical Expertise",
       items: [
-        "Able to manually test complex user stories and features with minimal oversight, handling tricky edge cases and multi-step workflows.",
-        "Designs, documents, and maintains detailed test plans and comprehensive regression suites for features of significant technical depth.",
-        "Capable of testing across multiple product domains or systems concurrently, validating end-to-end integration and data consistency.",
-        "Proficiently uses SQL queries to validate data persistence, state transitions, and business logic adherence in the database or using AI tools to accomplish the same.",
-        "Performs initial debugging and analysis of code-free automated test failures, escalating complex issues to senior team members.",
-        "Uses AppInsights or similar products to help diagnose and find additional bugs."
+        { id: "L2-TECH-1", text: "Able to manually test complex user stories and features with minimal oversight, handling tricky edge cases and multi-step workflows.", note: "Keep a running log of edge cases you catch that reviewers or devs missed — that log is your evidence trail for handling tricky workflows with minimal oversight." },
+        { id: "L2-TECH-2", text: "Designs, documents, and maintains detailed test plans and comprehensive regression suites for features of significant technical depth.", note: "A strong test plan separates happy path, negative path, and boundary coverage explicitly, and gets reviewed and updated after every regression cycle rather than written once and forgotten." },
+        { id: "L2-TECH-3", text: "Capable of testing across multiple product domains or systems concurrently, validating end-to-end integration and data consistency.", note: "Look for features touching two or more systems (e.g. payroll and tax filing) and document how you validated data consistency across the boundary, not just within one system." },
+        { id: "L2-TECH-4", text: "Proficiently uses SQL queries to validate data persistence, state transitions, and business logic adherence in the database or using AI tools to accomplish the same.", note: "Save a small library of reusable queries — state-transition checks, orphaned-record checks. Reusing and refining them over time is itself evidence of proficiency." },
+        { id: "L2-TECH-5", text: "Performs initial debugging and analysis of code-free automated test failures, escalating complex issues to senior team members.", note: "When automation fails, capture whether it's a real regression, a flaky test, or a stale locator before escalating — that triage is the actual skill being assessed, not just noticing a red build." },
+        { id: "L2-TECH-6", text: "Uses AppInsights or similar products to help diagnose and find additional bugs.", note: "Practice correlating a user-reported symptom to a specific exception or slow query in AppInsights — that trace-back skill is what separates ‘looked at logs’ from ‘used logs to find a bug’." }
       ]
     },
     {
+      key: "comm",
       title: "Communication & Collaboration",
       items: [
-        "Proactively communicates testing risks, scope changes, and quality status to the Product Owner and development team in a clear, well-justified, and timely manner.",
-        "Maintains a consistently professional, positive, and solution-oriented approach when collaborating with developers and other non-QA stakeholders.",
-        "Actively volunteers to support other teams."
+        { id: "L2-COMM-1", text: "Proactively communicates testing risks, scope changes, and quality status to the Product Owner and development team in a clear, well-justified, and timely manner.", note: "Risk communication lands best quantified — e.g. ‘this covers 80% of paths, the remaining 20% needs two more days’ — rather than a vague ‘still testing’." },
+        { id: "L2-COMM-2", text: "Maintains a consistently professional, positive, and solution-oriented approach when collaborating with developers and other non-QA stakeholders.", note: "This is usually judged through peer feedback rather than self-report — worth checking with your manager whether it's come up in any peer reviews or retros." },
+        { id: "L2-COMM-3", text: "Actively volunteers to support other teams.", note: "Document specific instances by name — team, ticket, what you contributed — since ‘actively volunteers’ is inherently about frequency and visibility, not a one-time favor." }
       ]
     },
     {
+      key: "resp",
       title: "Responsibility & Accountability",
       items: [
-        "Owns the end-to-end quality assurance of assigned complex features, ensuring comprehensive coverage across all impacted domains.",
-        "Collaborates closely with Product Owners to ensure requirements are testable and to understand the full business impact of testing risks.",
-        "Organizes and leads the manual regression effort with multiple people when necessary.",
-        "Consistently applies feedback and retains knowledge to avoid repeating mistakes or overlooking known risks."
+        { id: "L2-RESP-1", text: "Owns the end-to-end quality assurance of assigned complex features, ensuring comprehensive coverage across all impacted domains.", note: "Ownership shows up as being the person other testers or devs check with before a feature ships — not just the last one to sign off." },
+        { id: "L2-RESP-2", text: "Collaborates closely with Product Owners to ensure requirements are testable and to understand the full business impact of testing risks.", note: "Concrete evidence: instances where you flagged an untestable or ambiguous acceptance criterion before development started, not after." },
+        { id: "L2-RESP-3", text: "Organizes and leads the manual regression effort with multiple people when necessary.", note: "Leading a regression effort means assigning scope, tracking who tested what, and consolidating results — not just participating alongside others." },
+        { id: "L2-RESP-4", text: "Consistently applies feedback and retains knowledge to avoid repeating mistakes or overlooking known risks.", note: "A simple personal ‘lessons learned’ note that you actually revisit before similar future work is the clearest evidence of retaining feedback rather than just receiving it." }
       ]
     }
   ];
 
-  var STORAGE_KEY = "qa-promo-l2-l3-v1";
+  var LEVELS = {
+    l3: {
+      suites: L3_SUITES,
+      coverageLabel: "Level 3 delta coverage",
+      summaryCaption: "Summary checklist — 17 Level 3 requirements",
+      scopeNote: "Everything Level 3 adds on top of Level 2 — the gap you need to close."
+    },
+    l2: {
+      suites: L2_SUITES,
+      coverageLabel: "Level 2 baseline coverage",
+      summaryCaption: "Summary checklist — 15 Level 2 requirements",
+      scopeNote: "The full Level 2 bar, for a sanity check that nothing here has quietly slipped."
+    }
+  };
+
+  var STORAGE_KEY = "qa-promo-l2-l3-v2";
   var state = {};
   try {
     state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -675,12 +734,17 @@
 
   var suitesEl = document.getElementById("suites");
   var currentFilter = "all";
+  var activeLevel = "l3";
+
+  function activeSuites() {
+    return LEVELS[activeLevel].suites;
+  }
 
   function render() {
     suitesEl.innerHTML = "";
     var anyVisible = false;
 
-    SUITES.forEach(function (suite) {
+    activeSuites().forEach(function (suite) {
       var visibleItems = suite.items.filter(function (it) {
         var s = getItemState(it.id);
         if (currentFilter === "outstanding") return !s.checked;
@@ -733,10 +797,22 @@
         text.textContent = it.text;
         body.appendChild(text);
 
+        if (it.note) {
+          var guideLabel = document.createElement("span");
+          guideLabel.className = "kicker-label";
+          guideLabel.textContent = "In practice";
+          body.appendChild(guideLabel);
+
+          var guide = document.createElement("p");
+          guide.className = "item-guidance";
+          guide.textContent = it.note;
+          body.appendChild(guide);
+        }
+
         var evidenceWrap = document.createElement("div");
         evidenceWrap.className = "evidence";
         var label = document.createElement("label");
-        label.className = "evidence-label";
+        label.className = "kicker-label";
         label.textContent = "Notes — evidence of completion";
         evidenceWrap.appendChild(label);
         var ta = document.createElement("textarea");
@@ -766,12 +842,15 @@
 
     renderCoverage();
     renderSummary();
+    document.getElementById("scope-note").textContent = LEVELS[activeLevel].scopeNote;
+    document.getElementById("coverage-label").textContent = LEVELS[activeLevel].coverageLabel;
+    document.getElementById("summary-caption").textContent = LEVELS[activeLevel].summaryCaption;
   }
 
   function renderSummary() {
     var body = document.getElementById("summary-body");
     body.innerHTML = "";
-    SUITES.forEach(function (suite) {
+    activeSuites().forEach(function (suite) {
       suite.items.forEach(function (it) {
         var s = getItemState(it.id);
         var tr = document.createElement("tr");
@@ -810,7 +889,7 @@
     bar.innerHTML = "";
     keys.innerHTML = "";
 
-    SUITES.forEach(function (suite) {
+    activeSuites().forEach(function (suite) {
       var total = suite.items.length;
       var checked = suite.items.filter(function (it) { return getItemState(it.id).checked; }).length;
       totalAll += total;
@@ -843,9 +922,25 @@
     });
   });
 
+  document.querySelectorAll(".level-tabs button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      activeLevel = btn.getAttribute("data-level");
+      document.querySelectorAll(".level-tabs button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      currentFilter = "all";
+      document.querySelectorAll(".filters button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.getAttribute("data-filter") === "all"));
+      });
+      render();
+    });
+  });
+
   document.getElementById("reset-btn").addEventListener("click", function () {
-    if (window.confirm("Clear all checked items and evidence notes?")) {
-      state = {};
+    if (window.confirm("Clear all checked items and notes for the currently open checklist (" + activeLevel.toUpperCase() + ")?")) {
+      activeSuites().forEach(function (suite) {
+        suite.items.forEach(function (it) { delete state[it.id]; });
+      });
       save();
       render();
     }
@@ -858,10 +953,7 @@
   });
 
   window.addEventListener("beforeprint", function () {
-    preprintState = {
-      filter: currentFilter,
-      baselineOpen: baselinePanel.classList.contains("open")
-    };
+    preprintState = { filter: currentFilter };
     if (currentFilter !== "all") {
       currentFilter = "all";
       document.querySelectorAll(".filters button").forEach(function (b) {
@@ -869,7 +961,6 @@
       });
       render();
     }
-    baselinePanel.classList.add("open");
     document.querySelectorAll("textarea").forEach(function (ta) {
       ta.dataset.prevHeight = ta.style.height || "";
       ta.style.height = "auto";
@@ -883,32 +974,11 @@
     document.querySelectorAll(".filters button").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.getAttribute("data-filter") === currentFilter));
     });
-    if (!preprintState.baselineOpen) {
-      baselinePanel.classList.remove("open");
-      baselineToggle.setAttribute("aria-expanded", "false");
-    }
     render();
     document.querySelectorAll("textarea").forEach(function (ta) {
       ta.style.height = ta.dataset.prevHeight || "";
     });
     preprintState = null;
-  });
-
-  var baselineToggle = document.getElementById("baseline-toggle");
-  var baselinePanel = document.getElementById("baseline-panel");
-  var baselineHtml = "";
-  BASELINE.forEach(function (group) {
-    baselineHtml += "<h3>" + escapeHtml(group.title) + "</h3><ul>";
-    group.items.forEach(function (line) {
-      baselineHtml += "<li>" + escapeHtml(line) + "</li>";
-    });
-    baselineHtml += "</ul>";
-  });
-  baselinePanel.innerHTML = baselineHtml;
-
-  baselineToggle.addEventListener("click", function () {
-    var open = baselinePanel.classList.toggle("open");
-    baselineToggle.setAttribute("aria-expanded", String(open));
   });
 
   function escapeHtml(str) {
