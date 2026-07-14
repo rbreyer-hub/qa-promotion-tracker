@@ -1,0 +1,925 @@
+<title>Promotion Readiness — QA Analyst II → III</title>
+<style>
+  :root {
+    --paper: #F1F4F1;
+    --card: #FFFFFF;
+    --ink: #12181A;
+    --ink-soft: #4B5A56;
+    --ink-faint: #7C8B86;
+    --line: #D6DEDA;
+    --line-strong: #BEC9C4;
+    --accent: #0E7C6B;
+    --accent-soft: #DCEFE9;
+    --accent-ink: #0A5A4D;
+    --outstanding: #B4720A;
+    --outstanding-soft: #F6E8D2;
+    --outstanding-ink: #8A5806;
+    --shadow: 0 1px 2px rgba(18, 24, 26, 0.06);
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #11181A;
+      --card: #17201F;
+      --ink: #E7EDEA;
+      --ink-soft: #8FA39D;
+      --ink-faint: #5E706B;
+      --line: #223330;
+      --line-strong: #2C3F3B;
+      --accent: #34C9AC;
+      --accent-soft: #163832;
+      --accent-ink: #7FE0CB;
+      --outstanding: #E3A23D;
+      --outstanding-soft: #3A2C14;
+      --outstanding-ink: #F0BC6C;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #11181A; --card: #17201F; --ink: #E7EDEA; --ink-soft: #8FA39D; --ink-faint: #5E706B;
+    --line: #223330; --line-strong: #2C3F3B; --accent: #34C9AC; --accent-soft: #163832; --accent-ink: #7FE0CB;
+    --outstanding: #E3A23D; --outstanding-soft: #3A2C14; --outstanding-ink: #F0BC6C;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35); color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --paper: #F1F4F1; --card: #FFFFFF; --ink: #12181A; --ink-soft: #4B5A56; --ink-faint: #7C8B86;
+    --line: #D6DEDA; --line-strong: #BEC9C4; --accent: #0E7C6B; --accent-soft: #DCEFE9; --accent-ink: #0A5A4D;
+    --outstanding: #B4720A; --outstanding-soft: #F6E8D2; --outstanding-ink: #8A5806;
+    --shadow: 0 1px 2px rgba(18, 24, 26, 0.06); color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  /* ---- Header / spec block ---- */
+  header.spec {
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    padding: 28px 32px 24px;
+    margin-bottom: 32px;
+  }
+
+  .spec-id {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: clamp(22px, 3.4vw, 30px);
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+    font-weight: 700;
+  }
+
+  .spec-sub {
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+    max-width: 62ch;
+  }
+
+  .coverage-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .coverage-label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .coverage-num {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+
+  .coverage-num strong {
+    color: var(--ink);
+    font-size: 18px;
+  }
+
+  .coverage-bar {
+    display: flex;
+    gap: 3px;
+    height: 10px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .coverage-seg {
+    background: var(--line);
+    flex: 1 1 0;
+    position: relative;
+  }
+
+  .coverage-seg > i {
+    display: block;
+    height: 100%;
+    width: var(--fill, 0%);
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .coverage-seg > i { transition: none; }
+  }
+
+  .coverage-keys {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+
+  /* ---- Filter control ---- */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .filters {
+    display: inline-flex;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .filters button {
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    background: var(--card);
+    color: var(--ink-soft);
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-right: 1px solid var(--line-strong);
+  }
+
+  .filters button:last-child { border-right: none; }
+
+  .filters button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .filters button:focus-visible,
+  input[type="checkbox"]:focus-visible,
+  .baseline-toggle:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .reset-link {
+    font-size: 13px;
+    color: var(--ink-faint);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-family: inherit;
+    padding: 4px;
+  }
+
+  /* ---- Suites ---- */
+  .suite {
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+
+  .suite-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+
+  .suite-title {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .suite-count {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  .item {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+  }
+
+  .item:last-child { border-bottom: none; }
+
+  .item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 3px;
+    background: var(--card);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .item input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .item input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 4px;
+    height: 9px;
+    border: solid var(--card);
+    border-width: 0 2px 2px 0;
+    transform: rotate(40deg);
+  }
+
+  .item-body { min-width: 0; }
+
+  .item-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .item-id {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .pill {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--outstanding-soft);
+    color: var(--outstanding-ink);
+  }
+
+  .item.is-checked .pill {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+
+  .item-text {
+    margin: 4px 0 0;
+    color: var(--ink);
+  }
+
+  .item.is-checked .item-text {
+    color: var(--ink-soft);
+  }
+
+  .evidence {
+    margin-top: 8px;
+  }
+
+  .evidence textarea {
+    width: 100%;
+    min-height: 34px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 10px;
+  }
+
+  .evidence textarea::placeholder {
+    color: var(--ink-faint);
+  }
+
+  /* ---- Baseline reference ---- */
+  .baseline {
+    margin-top: 32px;
+  }
+
+  .baseline-toggle {
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    border: 1px dashed var(--line-strong);
+    border-radius: 4px;
+    padding: 14px 20px;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .baseline-toggle .chev {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    transition: transform 0.2s ease;
+  }
+
+  .baseline-toggle[aria-expanded="true"] .chev {
+    transform: rotate(90deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .baseline-toggle .chev { transition: none; }
+  }
+
+  .baseline-panel {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 4px 20px;
+    color: var(--ink-soft);
+  }
+
+  .baseline-panel.open { display: block; }
+
+  .baseline-panel h3 {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 16px 0 8px;
+  }
+
+  .baseline-panel ul {
+    margin: 0 0 16px;
+    padding-left: 20px;
+  }
+
+  .baseline-panel li {
+    margin-bottom: 6px;
+  }
+
+  footer.note {
+    margin-top: 40px;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    max-width: 62ch;
+  }
+
+  footer.note a {
+    color: var(--ink-faint);
+  }
+
+  .empty-state {
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 14px;
+  }
+
+  /* ---- Summary checklist ---- */
+  .summary {
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    padding: 4px 0;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+
+  .summary table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .summary caption {
+    text-align: left;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 14px 20px 10px;
+  }
+
+  .summary th {
+    text-align: left;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 6px 20px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .summary td {
+    padding: 7px 20px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  .summary tr:last-child td { border-bottom: none; }
+
+  .summary td.mark {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    width: 24px;
+    text-align: center;
+  }
+
+  .summary td.mark.done { color: var(--accent); }
+  .summary td.mark.pending { color: var(--outstanding); }
+
+  .summary td.sid {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    color: var(--ink-faint);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  /* ---- Evidence label ---- */
+  .evidence-label {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin: 10px 0 5px;
+  }
+
+  /* ---- Print / PDF export ---- */
+  @media print {
+    body { background: #ffffff; }
+    .wrap { max-width: none; padding: 0 6mm; }
+    .toolbar, .baseline-toggle, .reset-link { display: none !important; }
+    header.spec, .suite, .summary { box-shadow: none; border-color: #999; }
+    .suite, .summary { break-inside: avoid; }
+    .item { break-inside: avoid; }
+    .baseline-panel { display: block !important; border: none; padding: 0 20px; }
+    a { color: inherit; text-decoration: none; }
+    textarea { border-color: #bbb; overflow: hidden; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="spec">
+    <div class="spec-id">
+      <span>SPEC-REF · PDD-4622942209 → PDD-4622974977</span>
+      <span id="today-stamp"></span>
+    </div>
+    <h1>Promotion Readiness: QA Analyst II → III</h1>
+    <p class="spec-sub">Every requirement that Level 3 adds on top of Level 2, drawn directly from both role pages. Check off what you can already evidence — the rest is your outstanding work.</p>
+
+    <div class="coverage-row">
+      <span class="coverage-label">Delta coverage</span>
+      <span class="coverage-num"><strong id="cov-checked">0</strong> / <span id="cov-total">0</span> verified</span>
+    </div>
+    <div class="coverage-bar" id="coverage-bar"></div>
+    <div class="coverage-keys" id="coverage-keys"></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="filters" role="group" aria-label="Filter items">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="outstanding" aria-pressed="false">Outstanding</button>
+      <button type="button" data-filter="verified" aria-pressed="false">Verified</button>
+    </div>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <button type="button" class="reset-link" id="export-btn">Export as PDF</button>
+      <button type="button" class="reset-link" id="reset-btn">Reset checklist</button>
+    </div>
+  </div>
+
+  <section class="summary">
+    <table>
+      <caption>Summary checklist — 17 Level 3 requirements</caption>
+      <thead>
+        <tr><th></th><th>ID</th><th>Requirement</th></tr>
+      </thead>
+      <tbody id="summary-body"></tbody>
+    </table>
+  </section>
+
+  <main id="suites"></main>
+
+  <div class="baseline">
+    <button type="button" class="baseline-toggle" id="baseline-toggle" aria-expanded="false" aria-controls="baseline-panel">
+      <span>Reference: full Level 2 baseline (must still be consistently met)</span>
+      <span class="chev">›</span>
+    </button>
+    <div class="baseline-panel" id="baseline-panel"></div>
+  </div>
+
+  <footer class="note">
+    Source pages: <a href="https://patriotsoftware.atlassian.net/wiki/spaces/PDD/pages/4622942209/QA+Analyst+Level+2">QA Analyst Level 2</a> and <a href="https://patriotsoftware.atlassian.net/wiki/spaces/PDD/pages/4622974977/QA+Analyst+Level+3">QA Analyst Level 3</a>, both authored by Tim Weston, space PDD. Checklist state and evidence notes are saved locally in this browser only.
+  </footer>
+</div>
+
+<script>
+(function () {
+  var SUITES = [
+    {
+      key: "exp",
+      title: "Experience Guidelines",
+      items: [
+        { id: "EXP-1", text: "Minimum of 4 years of professional experience as a QA Analyst or in a related senior manual testing role (Level 2 requires 2)." },
+        { id: "EXP-2", text: "Consistently meets or exceeds Level 2 expectations, demonstrating expert-level proficiency in multiple domains (not just Level 1)." }
+      ]
+    },
+    {
+      key: "tech",
+      title: "Technical Expertise",
+      items: [
+        { id: "TECH-1", text: "Provides expert-level consultation during architecture and design reviews, representing the quality risk perspective for new systems and features." },
+        { id: "TECH-2", text: "Demonstrates advanced ability to use tools, including AI, to analyze network traffic and validate server-side responses, diagnosing subtle bugs." },
+        { id: "TECH-3", text: "Acts as a Subject Matter Expert (SME) for at least two major, interconnected product areas." },
+        { id: "TECH-4", text: "Actively identifies areas of improvement in the testing process and presents new ideas to the QA team, especially leveraging Claude." },
+        { id: "TECH-5", text: "Holds training sessions for the rest of the QA team on domain, tools, or other relevant material." },
+        { id: "TECH-6", text: "Maintains and organizes application-wide test plans for mob testing sessions." }
+      ]
+    },
+    {
+      key: "comm",
+      title: "Communication & Collaboration",
+      items: [
+        { id: "COMM-1", text: "Mentors and coaches junior analysts on complex testing techniques, effective defect reporting, and communication strategies." },
+        { id: "COMM-2", text: "Acts as a liaison between QA and other departments (e.g., Support, Training, UX) to ensure quality standards are met across the organization." },
+        { id: "COMM-3", text: "Proactively seeks and incorporates feedback from customer support and the QA Dashboard metrics to improve future testing efforts." },
+        { id: "COMM-4", text: "Helps diagnose, fix, and improve KaneAI automation for other analysts." }
+      ]
+    },
+    {
+      key: "resp",
+      title: "Responsibility & Accountability",
+      items: [
+        { id: "RESP-1", text: "Takes ultimate ownership of the testing and quality sign-off for major cross-application releases, including coordinating final production verification." },
+        { id: "RESP-2", text: "Manages the complete lifecycle of quality documentation for one or more domains, ensuring all test cases and KaneAI automations are up-to-date and easily accessible." },
+        { id: "RESP-3", text: "Retains and disseminates institutional knowledge across the QA team, ensuring critical information is documented and shared." },
+        { id: "RESP-4", text: "Consistently works ahead of their team to analyze requirements for future sprints and initiatives, preparing test strategies and identifying technical blockers." },
+        { id: "RESP-5", text: "Consistently demonstrates the ability to add an extra layer of testing beyond the layer suggested by the information provided." }
+      ]
+    }
+  ];
+
+  var BASELINE = [
+    {
+      title: "Experience Guidelines",
+      items: [
+        "Minimum of 2 years of professional experience as a QA Analyst or in a directly related software testing role.",
+        "Must consistently meet or exceed the expectations of a QA Analyst Level 1."
+      ]
+    },
+    {
+      title: "Technical Expertise",
+      items: [
+        "Able to manually test complex user stories and features with minimal oversight, handling tricky edge cases and multi-step workflows.",
+        "Designs, documents, and maintains detailed test plans and comprehensive regression suites for features of significant technical depth.",
+        "Capable of testing across multiple product domains or systems concurrently, validating end-to-end integration and data consistency.",
+        "Proficiently uses SQL queries to validate data persistence, state transitions, and business logic adherence in the database or using AI tools to accomplish the same.",
+        "Performs initial debugging and analysis of code-free automated test failures, escalating complex issues to senior team members.",
+        "Uses AppInsights or similar products to help diagnose and find additional bugs."
+      ]
+    },
+    {
+      title: "Communication & Collaboration",
+      items: [
+        "Proactively communicates testing risks, scope changes, and quality status to the Product Owner and development team in a clear, well-justified, and timely manner.",
+        "Maintains a consistently professional, positive, and solution-oriented approach when collaborating with developers and other non-QA stakeholders.",
+        "Actively volunteers to support other teams."
+      ]
+    },
+    {
+      title: "Responsibility & Accountability",
+      items: [
+        "Owns the end-to-end quality assurance of assigned complex features, ensuring comprehensive coverage across all impacted domains.",
+        "Collaborates closely with Product Owners to ensure requirements are testable and to understand the full business impact of testing risks.",
+        "Organizes and leads the manual regression effort with multiple people when necessary.",
+        "Consistently applies feedback and retains knowledge to avoid repeating mistakes or overlooking known risks."
+      ]
+    }
+  ];
+
+  var STORAGE_KEY = "qa-promo-l2-l3-v1";
+  var state = {};
+  try {
+    state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  } catch (e) { state = {}; }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function getItemState(id) {
+    return state[id] || { checked: false, note: "" };
+  }
+
+  function setItemState(id, patch) {
+    var cur = getItemState(id);
+    state[id] = Object.assign({}, cur, patch);
+    save();
+  }
+
+  var suitesEl = document.getElementById("suites");
+  var currentFilter = "all";
+
+  function render() {
+    suitesEl.innerHTML = "";
+    var anyVisible = false;
+
+    SUITES.forEach(function (suite) {
+      var visibleItems = suite.items.filter(function (it) {
+        var s = getItemState(it.id);
+        if (currentFilter === "outstanding") return !s.checked;
+        if (currentFilter === "verified") return s.checked;
+        return true;
+      });
+
+      if (!visibleItems.length) return;
+      anyVisible = true;
+
+      var checkedCount = suite.items.filter(function (it) { return getItemState(it.id).checked; }).length;
+
+      var suiteEl = document.createElement("section");
+      suiteEl.className = "suite";
+
+      var head = document.createElement("div");
+      head.className = "suite-head";
+      head.innerHTML =
+        '<span class="suite-title">' + escapeHtml(suite.title) + '</span>' +
+        '<span class="suite-count">' + checkedCount + ' / ' + suite.items.length + ' verified</span>';
+      suiteEl.appendChild(head);
+
+      visibleItems.forEach(function (it) {
+        var s = getItemState(it.id);
+        var row = document.createElement("div");
+        row.className = "item" + (s.checked ? " is-checked" : "");
+
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = s.checked;
+        cb.setAttribute("aria-label", "Mark " + it.id + " as verified");
+        cb.addEventListener("change", function () {
+          setItemState(it.id, { checked: cb.checked });
+          render();
+        });
+        row.appendChild(cb);
+
+        var body = document.createElement("div");
+        body.className = "item-body";
+
+        var top = document.createElement("div");
+        top.className = "item-top";
+        top.innerHTML =
+          '<span class="item-id">' + it.id + '</span>' +
+          '<span class="pill">' + (s.checked ? "Verified" : "Outstanding") + '</span>';
+        body.appendChild(top);
+
+        var text = document.createElement("p");
+        text.className = "item-text";
+        text.textContent = it.text;
+        body.appendChild(text);
+
+        var evidenceWrap = document.createElement("div");
+        evidenceWrap.className = "evidence";
+        var label = document.createElement("label");
+        label.className = "evidence-label";
+        label.textContent = "Evidence of completion";
+        evidenceWrap.appendChild(label);
+        var ta = document.createElement("textarea");
+        ta.placeholder = "Project, ticket, or example that proves this is done…";
+        ta.value = s.note || "";
+        ta.addEventListener("input", function () {
+          setItemState(it.id, { note: ta.value });
+        });
+        evidenceWrap.appendChild(ta);
+        body.appendChild(evidenceWrap);
+
+        row.appendChild(body);
+        suiteEl.appendChild(row);
+      });
+
+      suitesEl.appendChild(suiteEl);
+    });
+
+    if (!anyVisible) {
+      var empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = currentFilter === "verified"
+        ? "Nothing verified yet — check off items as you build evidence."
+        : "Nothing outstanding in this view.";
+      suitesEl.appendChild(empty);
+    }
+
+    renderCoverage();
+    renderSummary();
+  }
+
+  function renderSummary() {
+    var body = document.getElementById("summary-body");
+    body.innerHTML = "";
+    SUITES.forEach(function (suite) {
+      suite.items.forEach(function (it) {
+        var s = getItemState(it.id);
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          '<td class="mark ' + (s.checked ? "done" : "pending") + '">' + (s.checked ? "✓" : "○") + '</td>' +
+          '<td class="sid">' + it.id + '</td>' +
+          '<td>' + escapeHtml(it.text) + '</td>';
+        body.appendChild(tr);
+      });
+    });
+  }
+
+  function renderCoverage() {
+    var totalAll = 0, checkedAll = 0;
+    var bar = document.getElementById("coverage-bar");
+    var keys = document.getElementById("coverage-keys");
+    bar.innerHTML = "";
+    keys.innerHTML = "";
+
+    SUITES.forEach(function (suite) {
+      var total = suite.items.length;
+      var checked = suite.items.filter(function (it) { return getItemState(it.id).checked; }).length;
+      totalAll += total;
+      checkedAll += checked;
+
+      var seg = document.createElement("div");
+      seg.className = "coverage-seg";
+      var fillPct = total ? Math.round((checked / total) * 100) : 0;
+      var i = document.createElement("i");
+      i.style.setProperty("--fill", fillPct + "%");
+      seg.appendChild(i);
+      bar.appendChild(seg);
+
+      var key = document.createElement("span");
+      key.textContent = suite.title.split(" ")[0] + " " + checked + "/" + total;
+      keys.appendChild(key);
+    });
+
+    document.getElementById("cov-checked").textContent = checkedAll;
+    document.getElementById("cov-total").textContent = totalAll;
+  }
+
+  document.querySelectorAll(".filters button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      currentFilter = btn.getAttribute("data-filter");
+      document.querySelectorAll(".filters button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      render();
+    });
+  });
+
+  document.getElementById("reset-btn").addEventListener("click", function () {
+    if (window.confirm("Clear all checked items and evidence notes?")) {
+      state = {};
+      save();
+      render();
+    }
+  });
+
+  var preprintState = null;
+
+  document.getElementById("export-btn").addEventListener("click", function () {
+    window.print();
+  });
+
+  window.addEventListener("beforeprint", function () {
+    preprintState = {
+      filter: currentFilter,
+      baselineOpen: baselinePanel.classList.contains("open")
+    };
+    if (currentFilter !== "all") {
+      currentFilter = "all";
+      document.querySelectorAll(".filters button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.getAttribute("data-filter") === "all"));
+      });
+      render();
+    }
+    baselinePanel.classList.add("open");
+    document.querySelectorAll("textarea").forEach(function (ta) {
+      ta.dataset.prevHeight = ta.style.height || "";
+      ta.style.height = "auto";
+      ta.style.height = ta.scrollHeight + "px";
+    });
+  });
+
+  window.addEventListener("afterprint", function () {
+    if (!preprintState) return;
+    currentFilter = preprintState.filter;
+    document.querySelectorAll(".filters button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-filter") === currentFilter));
+    });
+    if (!preprintState.baselineOpen) {
+      baselinePanel.classList.remove("open");
+      baselineToggle.setAttribute("aria-expanded", "false");
+    }
+    render();
+    document.querySelectorAll("textarea").forEach(function (ta) {
+      ta.style.height = ta.dataset.prevHeight || "";
+    });
+    preprintState = null;
+  });
+
+  var baselineToggle = document.getElementById("baseline-toggle");
+  var baselinePanel = document.getElementById("baseline-panel");
+  var baselineHtml = "";
+  BASELINE.forEach(function (group) {
+    baselineHtml += "<h3>" + escapeHtml(group.title) + "</h3><ul>";
+    group.items.forEach(function (line) {
+      baselineHtml += "<li>" + escapeHtml(line) + "</li>";
+    });
+    baselineHtml += "</ul>";
+  });
+  baselinePanel.innerHTML = baselineHtml;
+
+  baselineToggle.addEventListener("click", function () {
+    var open = baselinePanel.classList.toggle("open");
+    baselineToggle.setAttribute("aria-expanded", String(open));
+  });
+
+  function escapeHtml(str) {
+    var div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  var stamp = document.getElementById("today-stamp");
+  stamp.textContent = "Rev 2026-07-14";
+
+  render();
+})();
+</script>
