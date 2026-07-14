@@ -272,34 +272,14 @@
   .item:last-child { border-bottom: none; }
 
   .item input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    margin-top: 2px;
-    border: 1.5px solid var(--line-strong);
+    width: 21px;
+    height: 21px;
+    margin: 1px 0 0;
+    accent-color: var(--accent);
+    border: 1.5px solid var(--ink-soft);
     border-radius: 3px;
-    background: var(--card);
     cursor: pointer;
-    position: relative;
     flex-shrink: 0;
-  }
-
-  .item input[type="checkbox"]:checked {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-
-  .item input[type="checkbox"]:checked::after {
-    content: "";
-    position: absolute;
-    left: 5px;
-    top: 1px;
-    width: 4px;
-    height: 9px;
-    border: solid var(--card);
-    border-width: 0 2px 2px 0;
-    transform: rotate(40deg);
   }
 
   .item-body { min-width: 0; }
@@ -345,24 +325,28 @@
   }
 
   .evidence {
-    margin-top: 8px;
+    margin-top: 10px;
   }
 
   .evidence textarea {
     width: 100%;
-    min-height: 34px;
+    min-height: 56px;
     resize: vertical;
     font-family: inherit;
     font-size: 13.5px;
     color: var(--ink);
     background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 3px;
-    padding: 8px 10px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 4px;
+    padding: 10px 12px;
   }
 
   .evidence textarea::placeholder {
     color: var(--ink-faint);
+  }
+
+  .evidence textarea:hover {
+    border-color: var(--ink-soft);
   }
 
   /* ---- Baseline reference ---- */
@@ -756,10 +740,10 @@
         evidenceWrap.className = "evidence";
         var label = document.createElement("label");
         label.className = "evidence-label";
-        label.textContent = "Evidence of completion";
+        label.textContent = "Notes — evidence of completion";
         evidenceWrap.appendChild(label);
         var ta = document.createElement("textarea");
-        ta.placeholder = "Project, ticket, or example that proves this is done…";
+        ta.placeholder = "Add a note: project, ticket, or example that proves this is done…";
         ta.value = s.note || "";
         ta.addEventListener("input", function () {
           setItemState(it.id, { note: ta.value });
