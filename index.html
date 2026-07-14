@@ -271,7 +271,8 @@
 
   .item:last-child { border-bottom: none; }
 
-  .item input[type="checkbox"] {
+  .item input[type="checkbox"],
+  .summary input[type="checkbox"] {
     width: 21px;
     height: 21px;
     margin: 1px 0 0;
@@ -478,13 +479,9 @@
   .summary tr:last-child td { border-bottom: none; }
 
   .summary td.mark {
-    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
     width: 24px;
     text-align: center;
   }
-
-  .summary td.mark.done { color: var(--accent); }
-  .summary td.mark.pending { color: var(--outstanding); }
 
   .summary td.sid {
     font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
@@ -778,10 +775,29 @@
       suite.items.forEach(function (it) {
         var s = getItemState(it.id);
         var tr = document.createElement("tr");
-        tr.innerHTML =
-          '<td class="mark ' + (s.checked ? "done" : "pending") + '">' + (s.checked ? "✓" : "○") + '</td>' +
-          '<td class="sid">' + it.id + '</td>' +
-          '<td>' + escapeHtml(it.text) + '</td>';
+
+        var tdMark = document.createElement("td");
+        tdMark.className = "mark";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = s.checked;
+        cb.setAttribute("aria-label", "Mark " + it.id + " as verified");
+        cb.addEventListener("change", function () {
+          setItemState(it.id, { checked: cb.checked });
+          render();
+        });
+        tdMark.appendChild(cb);
+
+        var tdId = document.createElement("td");
+        tdId.className = "sid";
+        tdId.textContent = it.id;
+
+        var tdText = document.createElement("td");
+        tdText.textContent = it.text;
+
+        tr.appendChild(tdMark);
+        tr.appendChild(tdId);
+        tr.appendChild(tdText);
         body.appendChild(tr);
       });
     });
